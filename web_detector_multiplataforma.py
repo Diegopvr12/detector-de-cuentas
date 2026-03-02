@@ -534,3 +534,8 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
+if risk_factors:
+    for factor in risk_factors:
+        st.markdown(f"<div class='risk-factor'>{factor}</div>", unsafe_allow_html=True)  # ← 8 espacios
+else:
+    st.success("Sin factores de riesgo significativos")
