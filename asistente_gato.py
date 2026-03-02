@@ -1,4 +1,4 @@
-# asistente_gato.py - Asistente IA con botón de gato flotante
+# asistente_gato.py - Asistente IA con botón de gato flotante (VERSIÓN CORREGIDA)
 import streamlit as st
 import random
 from datetime import datetime
@@ -36,12 +36,6 @@ GATO_CSS = """
     @keyframes catPulse {
         0%, 100% { transform: scale(1); }
         50% { transform: scale(1.05); }
-    }
-    
-    /* Cara de gato en SVG */
-    .cat-face {
-        width: 60px;
-        height: 60px;
     }
     
     /* Nube de chat flotante */
@@ -231,37 +225,6 @@ GATO_CSS = """
 """
 
 # ==============================================
-# SVG DE LA CARA DE GATO
-# ==============================================
-GATO_SVG = """
-<svg class="cat-face" viewBox="0 0 60 60">
-    <!-- Cabeza del gato -->
-    <circle cx="30" cy="30" r="22" fill="white" stroke="#764ba2" stroke-width="2"/>
-    
-    <!-- Orejas -->
-    <polygon points="18,15 22,10 26,15" fill="white" stroke="#764ba2" stroke-width="1.5"/>
-    <polygon points="34,15 38,10 42,15" fill="white" stroke="#764ba2" stroke-width="1.5"/>
-    
-    <!-- Ojos -->
-    <circle cx="22" cy="26" r="3" fill="#764ba2"/>
-    <circle cx="38" cy="26" r="3" fill="#764ba2"/>
-    
-    <!-- Pupilas -->
-    <circle cx="22" cy="26" r="1.5" fill="white"/>
-    <circle cx="38" cy="26" r="1.5" fill="white"/>
-    
-    <!-- Nariz -->
-    <polygon points="30,32 28,30 32,30" fill="#ff69b4"/>
-    
-    <!-- Bigotes -->
-    <line x1="15" y1="32" x2="8" y2="30" stroke="#764ba2" stroke-width="1" opacity="0.5"/>
-    <line x1="15" y1="35" x2="8" y2="35" stroke="#764ba2" stroke-width="1" opacity="0.5"/>
-    <line x1="45" y1="32" x2="52" y2="30" stroke="#764ba2" stroke-width="1" opacity="0.5"/>
-    <line x1="45" y1="35" x2="52" y2="35" stroke="#764ba2" stroke-width="1" opacity="0.5"/>
-</svg>
-"""
-
-# ==============================================
 # CLASE ASISTENTE IA
 # ==============================================
 class AsistenteGato:
@@ -313,10 +276,10 @@ class AsistenteGato:
         return "🐱 ¿Podrías ser más específico? Puedo ayudarte con:\n• Qué es el detector\n• Cómo funciona\n• Las plataformas soportadas\n• La precisión del modelo\n• Interpretar resultados"
 
 # ==============================================
-# FUNCIÓN PRINCIPAL - LLAMA A ESTO EN TU APP
+# FUNCIÓN PRINCIPAL
 # ==============================================
-def agregar_asistente_gato():
-    """Agrega el botón de gato flotante y el asistente a la página"""
+def init_asistente_gato():
+    """Inicializa el asistente - VERSIÓN CORREGIDA"""
     
     # Inicializar estado
     if 'chat_visible' not in st.session_state:
@@ -331,55 +294,91 @@ def agregar_asistente_gato():
     # Agregar CSS
     st.markdown(GATO_CSS, unsafe_allow_html=True)
     
+    # SVG del gato como string (CORREGIDO)
+    gato_svg = """
+    <svg width="60" height="60" viewBox="0 0 60 60">
+        <!-- Cabeza -->
+        <circle cx="30" cy="30" r="22" fill="white" stroke="#764ba2" stroke-width="2"/>
+        <!-- Orejas -->
+        <polygon points="18,15 22,10 26,15" fill="white" stroke="#764ba2" stroke-width="1.5"/>
+        <polygon points="34,15 38,10 42,15" fill="white" stroke="#764ba2" stroke-width="1.5"/>
+        <!-- Ojos -->
+        <circle cx="22" cy="26" r="3" fill="#764ba2"/>
+        <circle cx="38" cy="26" r="3" fill="#764ba2"/>
+        <!-- Pupilas -->
+        <circle cx="22" cy="26" r="1.5" fill="white"/>
+        <circle cx="38" cy="26" r="1.5" fill="white"/>
+        <!-- Nariz -->
+        <polygon points="30,32 28,30 32,30" fill="#ff69b4"/>
+        <!-- Bigotes -->
+        <line x1="15" y1="32" x2="8" y2="30" stroke="#764ba2" stroke-width="1" opacity="0.5"/>
+        <line x1="15" y1="35" x2="8" y2="35" stroke="#764ba2" stroke-width="1" opacity="0.5"/>
+        <line x1="45" y1="32" x2="52" y2="30" stroke="#764ba2" stroke-width="1" opacity="0.5"/>
+        <line x1="45" y1="35" x2="52" y2="35" stroke="#764ba2" stroke-width="1" opacity="0.5"/>
+    </svg>
+    """
+    
     # Botón de gato flotante
     cat_button_html = f"""
     <div class="cat-button" onclick="toggleChat()" id="catButton">
-        {GATO_SVG}
+        {gato_svg}
     </div>
-    """
-    st.markdown(cat_button_html, unsafe_allow_html=True)
     
-    # JavaScript para controlar la visibilidad
-    js_code = """
     <script>
-    function toggleChat() {
+    function toggleChat() {{
         const chat = document.getElementById('chatCloud');
-        if (chat) {
+        if (chat) {{
             chat.classList.toggle('show');
-        }
-    }
+        }}
+    }}
     
-    function closeChat() {
+    function closeChat() {{
         const chat = document.getElementById('chatCloud');
-        if (chat) {
+        if (chat) {{
             chat.classList.remove('show');
-        }
-    }
+        }}
+    }}
     
-    function sendMessage() {
+    function sendMessage() {{
         const input = document.getElementById('chatInput');
         const message = input.value;
-        if (message.trim()) {
-            const event = new Event('chat_message', { detail: { message: message } });
-            window.dispatchEvent(event);
+        if (message.trim()) {{
+            const messages = document.getElementById('chatMessages');
+            const userMsg = document.createElement('div');
+            userMsg.className = 'chat-message user-message';
+            userMsg.innerHTML = message + '<div class="timestamp">' + new Date().toLocaleTimeString([], {{hour: '2-digit', minute:'2-digit'}}) + '</div>';
+            messages.appendChild(userMsg);
+            
+            // Simular respuesta del bot
+            setTimeout(function() {{
+                const botMsg = document.createElement('div');
+                botMsg.className = 'chat-message bot-message';
+                botMsg.innerHTML = '🐱 ¡Gracias por tu mensaje! Un asistente te responderá pronto.' + 
+                    '<div class="timestamp">' + new Date().toLocaleTimeString([], {{hour: '2-digit', minute:'2-digit'}}) + '</div>';
+                messages.appendChild(botMsg);
+                messages.scrollTop = messages.scrollHeight;
+            }}, 1000);
+            
             input.value = '';
-        }
-    }
+            messages.scrollTop = messages.scrollHeight;
+        }}
+    }}
     
-    function handleKeyPress(event) {
-        if (event.key === 'Enter') {
+    function handleKeyPress(event) {{
+        if (event.key === 'Enter') {{
             sendMessage();
-        }
-    }
+        }}
+    }}
     
-    function useSuggestion(text) {
+    function useSuggestion(text) {{
         const input = document.getElementById('chatInput');
         input.value = text;
         sendMessage();
-    }
+    }}
     </script>
     """
-    st.markdown(js_code, unsafe_allow_html=True)
+    
+    st.markdown(cat_button_html, unsafe_allow_html=True)
     
     # Nube de chat
     chat_html = f"""
@@ -391,40 +390,10 @@ def agregar_asistente_gato():
         </div>
         
         <div class="cloud-content" id="chatMessages">
-    """
-    
-    # Agregar mensajes del historial
-    if not st.session_state.historial:
-        bienvenida = "🐱 ¡Hola! Soy tu asistente gatuno. ¿Quieres saber qué hace esta página o cómo funciona el detector?"
-        chat_html += f"""
-        <div class="chat-message bot-message">
-            {bienvenida}
-            <div class="timestamp">{datetime.now().strftime('%H:%M')}</div>
-        </div>
-        """
-        st.session_state.historial.append({
-            'tipo': 'bot',
-            'texto': bienvenida,
-            'hora': datetime.now().strftime('%H:%M')
-        })
-    else:
-        for msg in st.session_state.historial:
-            if msg['tipo'] == 'usuario':
-                chat_html += f"""
-                <div class="chat-message user-message">
-                    {msg['texto']}
-                    <div class="timestamp">{msg['hora']}</div>
-                </div>
-                """
-            else:
-                chat_html += f"""
-                <div class="chat-message bot-message">
-                    {msg['texto']}
-                    <div class="timestamp">{msg['hora']}</div>
-                </div>
-                """
-    
-    chat_html += """
+            <div class="chat-message bot-message">
+                🐱 ¡Hola! Soy tu asistente gatuno. ¿Quieres saber qué hace esta página o cómo funciona el detector?
+                <div class="timestamp">{datetime.now().strftime('%H:%M')}</div>
+            </div>
         </div>
         
         <div class="suggestions">
@@ -442,32 +411,3 @@ def agregar_asistente_gato():
     """
     
     st.markdown(chat_html, unsafe_allow_html=True)
-    
-    # Manejar mensajes del usuario
-    def manejar_mensaje():
-        mensaje = st.query_params.get("msg", "")
-        if mensaje:
-            st.session_state.historial.append({
-                'tipo': 'usuario',
-                'texto': mensaje,
-                'hora': datetime.now().strftime('%H:%M')
-            })
-            
-            respuesta = st.session_state.asistente.procesar(mensaje)
-            
-            st.session_state.historial.append({
-                'tipo': 'bot',
-                'texto': respuesta,
-                'hora': datetime.now().strftime('%H:%M')
-            })
-            
-            st.rerun()
-    
-    manejar_mensaje()
-
-# ==============================================
-# FUNCIÓN PARA INTEGRAR EN CUALQUIER PÁGINA
-# ==============================================
-def init_asistente_gato():
-    """Inicializa el asistente - Llama a esto en tu página principal"""
-    agregar_asistente_gato()
