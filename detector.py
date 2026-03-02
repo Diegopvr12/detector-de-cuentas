@@ -1,3 +1,4 @@
+# detector.py - VERSIÓN CORREGIDA
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
@@ -251,4 +252,4 @@ class SocialMediaFakeAccountDetector:
         self.instagram_features = joblib.load(features_path)
         
         print(f"[OK] Modelo cargado")
-        return TrueFalse
+        return True
