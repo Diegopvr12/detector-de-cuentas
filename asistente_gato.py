@@ -253,7 +253,7 @@ GATO_SVG = """
     <!-- Nariz -->
     <polygon points="30,32 28,30 32,30" fill="#ff69b4"/>
     
-    <!-- Bigotes (opcional) -->
+    <!-- Bigotes -->
     <line x1="15" y1="32" x2="8" y2="30" stroke="#764ba2" stroke-width="1" opacity="0.5"/>
     <line x1="15" y1="35" x2="8" y2="35" stroke="#764ba2" stroke-width="1" opacity="0.5"/>
     <line x1="45" y1="32" x2="52" y2="30" stroke="#764ba2" stroke-width="1" opacity="0.5"/>
@@ -273,14 +273,15 @@ class AsistenteGato:
             ],
             "como funciona": [
                 "🤖 El detector analiza **19 características diferentes** como:\n• Ratio seguidores/seguidos\n• Engagement (likes/comentarios)\n• Antigüedad de la cuenta\n• Patrones en el username\n• Configuración de privacidad\n\nCon estos datos, un modelo de Random Forest calcula la probabilidad de que sea falsa.",
-                "El modelo fue entrenado con miles de cuentas reales y falsas, aprendiendo a detectar patrones típicos de bots. La precisión supera el 95% en las tres plataformas."
+                "El modelo fue entrenado con miles de cuentas reales y falsas, aprendiendo a detectar patrones típicos de bots."
             ],
             "plataformas": [
                 "📷 **Instagram** - Análisis completo de perfiles\n🎵 **TikTok** - Métricas específicas de videos\n👥 **Facebook** - Perfiles personales y páginas",
-                "Soporta las 3 principales redes sociales. Cada una tiene su propio formulario con métricas específicas optimizadas para esa plataforma."
+                "Soporta las 3 principales redes sociales. Cada una tiene su propio formulario con métricas específicas."
             ],
             "precision": [
-                "📊 **Precisión del modelo:**\n• Instagram: 95-98%\n• TikTok: 93-95%\n• Facebook: 95-97%\n\nEstos números están basados en pruebas exhaustivas con miles de cuentas."
+                "📊 **Precisión del modelo:**\n• Instagram: 95-98%\n• TikTok: 93-95%\n• Facebook: 95-97%",
+                "Estos números están basados en pruebas exhaustivas con miles de cuentas reales y falsas."
             ],
             "significa": [
                 "📈 **Ratio S/S:** Relación entre seguidores y seguidos. Un ratio bajo puede indicar comportamiento de bot.\n\n❤️ **Engagement:** Mide la interacción real. Cuentas falsas suelen tener engagement muy bajo."
@@ -309,7 +310,6 @@ class AsistenteGato:
             if clave in mensaje_lower:
                 return random.choice(respuestas)
         
-        # Respuesta por defecto
         return "🐱 ¿Podrías ser más específico? Puedo ayudarte con:\n• Qué es el detector\n• Cómo funciona\n• Las plataformas soportadas\n• La precisión del modelo\n• Interpretar resultados"
 
 # ==============================================
@@ -327,9 +327,6 @@ def agregar_asistente_gato():
     
     if 'historial' not in st.session_state:
         st.session_state.historial = []
-    
-    if 'input_key' not in st.session_state:
-        st.session_state.input_key = 0
     
     # Agregar CSS
     st.markdown(GATO_CSS, unsafe_allow_html=True)
@@ -363,13 +360,7 @@ def agregar_asistente_gato():
         const input = document.getElementById('chatInput');
         const message = input.value;
         if (message.trim()) {
-            // Disparar evento de Streamlit
-            const event = new CustomEvent('streamlit:message', {
-                detail: {
-                    type: 'chat_message',
-                    message: message
-                }
-            });
+            const event = new Event('chat_message', { detail: { message: message } });
             window.dispatchEvent(event);
             input.value = '';
         }
@@ -391,19 +382,32 @@ def agregar_asistente_gato():
     st.markdown(js_code, unsafe_allow_html=True)
     
     # Nube de chat
-    with st.container():
-        chat_html = f"""
-        <div class="chat-cloud {'show' if st.session_state.chat_visible else ''}" id="chatCloud">
-            <div class="cloud-header">
-                <span>🐱 Asistente Gatuno</span>
-                <span class="ia-badge">IA</span>
-                <button class="close-btn" onclick="closeChat()">×</button>
-            </div>
-            
-            <div class="cloud-content" id="chatMessages">
-        """
+    chat_html = f"""
+    <div class="chat-cloud {'show' if st.session_state.chat_visible else ''}" id="chatCloud">
+        <div class="cloud-header">
+            <span>🐱 Asistente Gatuno</span>
+            <span class="ia-badge">IA</span>
+            <button class="close-btn" onclick="closeChat()">×</button>
+        </div>
         
-        # Agregar mensajes del historial
+        <div class="cloud-content" id="chatMessages">
+    """
+    
+    # Agregar mensajes del historial
+    if not st.session_state.historial:
+        bienvenida = "🐱 ¡Hola! Soy tu asistente gatuno. ¿Quieres saber qué hace esta página o cómo funciona el detector?"
+        chat_html += f"""
+        <div class="chat-message bot-message">
+            {bienvenida}
+            <div class="timestamp">{datetime.now().strftime('%H:%M')}</div>
+        </div>
+        """
+        st.session_state.historial.append({
+            'tipo': 'bot',
+            'texto': bienvenida,
+            'hora': datetime.now().strftime('%H:%M')
+        })
+    else:
         for msg in st.session_state.historial:
             if msg['tipo'] == 'usuario':
                 chat_html += f"""
@@ -419,68 +423,47 @@ def agregar_asistente_gato():
                     <div class="timestamp">{msg['hora']}</div>
                 </div>
                 """
+    
+    chat_html += """
+        </div>
         
-        # Si no hay historial, agregar mensaje de bienvenida
-        if not st.session_state.historial:
-            bienvenida = "🐱 ¡Hola! Soy tu asistente gatuno. ¿Quieres saber qué hace esta página o cómo funciona el detector?"
-            chat_html += f"""
-            <div class="chat-message bot-message">
-                {bienvenida}
-                <div class="timestamp">{datetime.now().strftime('%H:%M')}</div>
-            </div>
-            """
+        <div class="suggestions">
+            <span class="suggestion-chip" onclick="useSuggestion('¿Qué es esta página?')">📌 ¿Qué es?</span>
+            <span class="suggestion-chip" onclick="useSuggestion('¿Cómo funciona?')">⚙️ ¿Cómo funciona?</span>
+            <span class="suggestion-chip" onclick="useSuggestion('¿Qué plataformas soporta?')">📱 Plataformas</span>
+            <span class="suggestion-chip" onclick="useSuggestion('¿Qué precisión tiene?')">📊 Precisión</span>
+        </div>
+        
+        <div class="chat-input-area">
+            <input type="text" class="chat-input" id="chatInput" placeholder="Escribe tu pregunta..." onkeypress="handleKeyPress(event)">
+            <button class="send-btn" onclick="sendMessage()">➤</button>
+        </div>
+    </div>
+    """
+    
+    st.markdown(chat_html, unsafe_allow_html=True)
+    
+    # Manejar mensajes del usuario
+    def manejar_mensaje():
+        mensaje = st.query_params.get("msg", "")
+        if mensaje:
             st.session_state.historial.append({
-                'tipo': 'bot',
-                'texto': bienvenida,
+                'tipo': 'usuario',
+                'texto': mensaje,
                 'hora': datetime.now().strftime('%H:%M')
             })
-        
-        chat_html += """
-            </div>
             
-            <div class="suggestions">
-                <span class="suggestion-chip" onclick="useSuggestion('¿Qué es esta página?')">📌 ¿Qué es?</span>
-                <span class="suggestion-chip" onclick="useSuggestion('¿Cómo funciona?')">⚙️ ¿Cómo funciona?</span>
-                <span class="suggestion-chip" onclick="useSuggestion('¿Qué plataformas soporta?')">📱 Plataformas</span>
-                <span class="suggestion-chip" onclick="useSuggestion('¿Qué precisión tiene?')">📊 Precisión</span>
-            </div>
+            respuesta = st.session_state.asistente.procesar(mensaje)
             
-            <div class="chat-input-area">
-                <input type="text" class="chat-input" id="chatInput" placeholder="Escribe tu pregunta..." onkeypress="handleKeyPress(event)">
-                <button class="send-btn" onclick="sendMessage()">➤</button>
-            </div>
-        </div>
-        """
-        
-        st.markdown(chat_html, unsafe_allow_html=True)
+            st.session_state.historial.append({
+                'tipo': 'bot',
+                'texto': respuesta,
+                'hora': datetime.now().strftime('%H:%M')
+            })
+            
+            st.rerun()
     
-    # Manejar mensajes del usuario (parte de Streamlit)
-    def handle_chat():
-        if 'chat_message' in st.session_state:
-            mensaje = st.session_state.chat_message
-            if mensaje:
-                # Agregar mensaje del usuario
-                st.session_state.historial.append({
-                    'tipo': 'usuario',
-                    'texto': mensaje,
-                    'hora': datetime.now().strftime('%H:%M')
-                })
-                
-                # Obtener respuesta
-                respuesta = st.session_state.asistente.procesar(mensaje)
-                
-                # Agregar respuesta del bot
-                st.session_state.historial.append({
-                    'tipo': 'bot',
-                    'texto': respuesta,
-                    'hora': datetime.now().strftime('%H:%M')
-                })
-                
-                # Limpiar
-                st.session_state.chat_message = ""
-                st.rerun()
-    
-    handle_chat()
+    manejar_mensaje()
 
 # ==============================================
 # FUNCIÓN PARA INTEGRAR EN CUALQUIER PÁGINA
@@ -488,17 +471,3 @@ def agregar_asistente_gato():
 def init_asistente_gato():
     """Inicializa el asistente - Llama a esto en tu página principal"""
     agregar_asistente_gato()
-
-# ==============================================
-# EJEMPLO DE USO (si se ejecuta directamente)
-# ==============================================
-if __name__ == "__main__":
-    st.set_page_config(
-        page_title="Asistente Gatuno",
-        page_icon="🐱"
-    )
-    
-    st.title("🐱 Asistente Gatuno - Demostración")
-    st.write("Este es un asistente flotante. Busca el botón de gato en la esquina inferior derecha.")
-    
-    init_asistente_gato()
