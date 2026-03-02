@@ -523,6 +523,11 @@ if analyze and username:
             st.success("✅ **CONFIABLE**")
         
         st.markdown("</div>", unsafe_allow_html=True)
+# ==============================================
+# ASISTENTE IA DE GATO
+# ==============================================
+import asistente_gato
+asistente_gato.init_asistente_gato()
 
 # ==============================================
 # FOOTER - FINAL DEL CÓDIGO (NADA MÁS DEBE IR AQUÍ)
@@ -533,3 +538,4 @@ st.markdown("""
     <p>Machine Learning • Precisión superior al 95% • Derechos a Diegopvr12</p>
 </div>
 """, unsafe_allow_html=True)
+
