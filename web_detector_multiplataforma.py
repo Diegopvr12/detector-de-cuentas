@@ -887,6 +887,7 @@ st.markdown("""
 <div class='footer'>
     <p>🛡️ Detector Profesional de Cuentas Falsas v4.0</p>
     <p>Machine Learning • Precisión superior al 95% • Análisis en tiempo real</p>
-    <p style='font-size: 0.8rem; margin-top: 1rem;'>© 2026 - Derechos a los URA</p>
+    <p style='font-size: 0.8rem; margin-top: 1rem;'>© 2026 - Derechos a diegopvr12</p>
 </div>
+
 """, unsafe_allow_html=True)
