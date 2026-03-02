@@ -525,7 +525,7 @@ if analyze and username:
         st.markdown("</div>", unsafe_allow_html=True)
 
 # ==============================================
-# FOOTER
+# FOOTER - FINAL DEL CÓDIGO (NADA MÁS DEBE IR AQUÍ)
 # ==============================================
 st.markdown("""
 <div class='footer'>
@@ -533,11 +533,3 @@ st.markdown("""
     <p>Machine Learning • Precisión superior al 95% • Derechos a Diegopvr12</p>
 </div>
 """, unsafe_allow_html=True)
-
-if risk_factors:
-    for factor in risk_factors:
-        st.markdown(f"<div class='risk-factor'>{factor}</div>", unsafe_allow_html=True)  # ← 8 espacios
-else:
-    st.success("Sin factores de riesgo significativos")
-
-
