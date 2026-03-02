@@ -530,6 +530,7 @@ if analyze and username:
 st.markdown("""
 <div class='footer'>
     <p>🛡️ Detector Profesional de Cuentas Falsas v4.0</p>
-    <p>Machine Learning • Precisión superior al 95% • Instagram • TikTok • Facebook</p>
+    <p>Machine Learning • Precisión superior al 95% • Derechos a Diegopvr12</p>
 </div>
 """, unsafe_allow_html=True)
+
