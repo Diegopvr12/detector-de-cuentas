@@ -1,9 +1,9 @@
-# asistente_gato.py - Botón circular con gato dibujado
+# asistente_gato.py - Botón simple con emoji de gato
 import streamlit as st
 from datetime import datetime
 
 def init_asistente_gato():
-    """Inicializa el asistente con botón circular de gato"""
+    """Inicializa el asistente con emoji de gato"""
     
     # Inicializar estados
     if 'chat_abierto' not in st.session_state:
@@ -14,30 +14,31 @@ def init_asistente_gato():
             {"tipo": "bot", "texto": "🐱 ¡Hola! Soy tu asistente gatuno. ¿Quieres saber qué hace esta página o cómo funciona el detector?"}
         ]
     
-    # CSS personalizado
+    # CSS para el botón de emoji
     st.markdown("""
     <style>
-        /* Botón circular con gato */
-        .gato-boton {
+        .gato-emoji {
             position: fixed;
             bottom: 30px;
             right: 30px;
+            font-size: 50px;
+            cursor: pointer;
+            z-index: 9999;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3));
+            transition: transform 0.3s ease;
+            animation: flotar 3s ease-in-out infinite;
+            background: linear-gradient(135deg, #667eea, #764ba2);
             width: 80px;
             height: 80px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            cursor: pointer;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-            z-index: 9998;
             border: 3px solid white;
-            animation: flotar 3s ease-in-out infinite;
-            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
         }
         
-        .gato-boton:hover {
+        .gato-emoji:hover {
             transform: scale(1.1) rotate(5deg);
             box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
         }
@@ -48,7 +49,11 @@ def init_asistente_gato():
             100% { transform: translateY(0px); }
         }
         
-        /* Nube de chat */
+        .gato-emoji span {
+            font-size: 40px;
+            line-height: 1;
+        }
+        
         .chat-nube {
             position: fixed;
             bottom: 120px;
@@ -57,7 +62,7 @@ def init_asistente_gato():
             background: white;
             border-radius: 25px 25px 25px 5px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-            z-index: 9999;
+            z-index: 9998;
             overflow: hidden;
             border: 2px solid #667eea;
             animation: aparecer 0.3s ease;
@@ -80,6 +85,7 @@ def init_asistente_gato():
             padding: 15px 20px;
             display: flex;
             align-items: center;
+            justify-content: space-between;
         }
         
         .chat-header span {
@@ -92,36 +98,20 @@ def init_asistente_gato():
             padding: 3px 10px;
             border-radius: 15px;
             font-size: 0.8rem;
-            margin-left: 10px;
         }
         
-        /* Botón de cerrar con gato pequeño */
-        .gato-cerrar {
+        .close-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
             width: 30px;
             height: 30px;
-            background: rgba(255,255,255,0.2);
             border-radius: 50%;
-            margin-left: auto;
             cursor: pointer;
+            font-size: 1.2rem;
             display: flex;
-            justify-content: center;
             align-items: center;
-            transition: all 0.2s ease;
-        }
-        
-        .gato-cerrar:hover {
-            background: rgba(255,255,255,0.3);
-            transform: scale(1.1);
-        }
-        
-        .gato-cerrar svg {
-            width: 20px;
-            height: 20px;
-        }
-        
-        .gato-cerrar path, .gato-cerrar circle {
-            stroke: white;
-            fill: white;
+            justify-content: center;
         }
         
         .chat-messages {
@@ -136,7 +126,6 @@ def init_asistente_gato():
             border-radius: 15px;
             margin: 8px 0;
             max-width: 85%;
-            word-wrap: break-word;
         }
         
         .user-message {
@@ -150,12 +139,6 @@ def init_asistente_gato():
             color: #333;
             margin-right: auto;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        
-        .timestamp {
-            font-size: 0.6rem;
-            opacity: 0.7;
-            margin-top: 4px;
         }
         
         .chat-input-area {
@@ -209,7 +192,6 @@ def init_asistente_gato():
             font-size: 0.8rem;
             cursor: pointer;
             color: #667eea;
-            transition: all 0.2s ease;
         }
         
         .suggestion-chip:hover {
@@ -219,63 +201,23 @@ def init_asistente_gato():
     </style>
     """, unsafe_allow_html=True)
     
-    # SVG del gato para el botón principal
-    gato_principal_svg = """
-    <svg width="50" height="50" viewBox="0 0 50 50">
-        <!-- Cabeza -->
-        <circle cx="25" cy="25" r="15" fill="white" stroke="white" stroke-width="2"/>
-        
-        <!-- Orejas -->
-        <polygon points="15,12 20,8 23,12" fill="white" stroke="white" stroke-width="1.5"/>
-        <polygon points="35,12 30,8 27,12" fill="white" stroke="white" stroke-width="1.5"/>
-        
-        <!-- Ojos -->
-        <circle cx="20" cy="23" r="3" fill="#764ba2"/>
-        <circle cx="30" cy="23" r="3" fill="#764ba2"/>
-        <circle cx="21" cy="22" r="1" fill="white"/>
-        <circle cx="31" cy="22" r="1" fill="white"/>
-        
-        <!-- Nariz -->
-        <polygon points="25,28 24,26 26,26" fill="#ff69b4"/>
-        
-        <!-- Bigotes -->
-        <line x1="15" y1="26" x2="8" y2="25" stroke="white" stroke-width="1"/>
-        <line x1="15" y1="28" x2="8" y2="28" stroke="white" stroke-width="1"/>
-        <line x1="35" y1="26" x2="42" y2="25" stroke="white" stroke-width="1"/>
-        <line x1="35" y1="28" x2="42" y2="28" stroke="white" stroke-width="1"/>
-        
-        <!-- Sonrisa -->
-        <path d="M20,32 Q25,35 30,32" stroke="white" stroke-width="1.5" fill="none"/>
-    </svg>
-    """
-    
-    # SVG del gato pequeño para cerrar
-    gato_cerrar_svg = """
-    <svg width="20" height="20" viewBox="0 0 20 20">
-        <circle cx="10" cy="10" r="6" fill="white" stroke="white" stroke-width="1"/>
-        <circle cx="7" cy="8" r="1.5" fill="#764ba2"/>
-        <circle cx="13" cy="8" r="1.5" fill="#764ba2"/>
-        <polygon points="10,12 9,11 11,11" fill="#ff69b4"/>
-    </svg>
-    """
-    
-    # Botón circular con gato
-    gato_html = f"""
-    <div class="gato-boton" onclick="toggleChat()">
-        {gato_principal_svg}
+    # Botón de emoji de gato
+    gato_html = """
+    <div class="gato-emoji" onclick="toggleChat()">
+        <span>🐱</span>
     </div>
     
     <script>
-    function toggleChat() {{
+    function toggleChat() {
         const event = new CustomEvent('chat_toggle');
         window.dispatchEvent(event);
-    }}
+    }
     </script>
     """
     
     st.markdown(gato_html, unsafe_allow_html=True)
     
-    # Capturar clic del gato
+    # Capturar clic
     col1, col2, col3 = st.columns([10, 1, 1])
     with col2:
         if st.button(" ", key="gato_click", help="Abrir asistente"):
@@ -286,27 +228,14 @@ def init_asistente_gato():
     if st.session_state.chat_abierto:
         st.markdown('<div class="chat-nube">', unsafe_allow_html=True)
         
-        # Cabecera con gato para cerrar
+        # Cabecera
         col_h1, col_h2, col_h3 = st.columns([6, 2, 2])
         with col_h1:
             st.markdown("🐱 **Asistente Gatuno**")
         with col_h2:
             st.markdown("`IA`")
         with col_h3:
-            # Botón de cerrar con gato
-            cerrar_html = f"""
-            <div class="gato-cerrar" onclick="closeChat()">
-                {gato_cerrar_svg}
-            </div>
-            <script>
-            function closeChat() {{
-                const event = new CustomEvent('chat_close');
-                window.dispatchEvent(event);
-            }}
-            </script>
-            """
-            st.markdown(cerrar_html, unsafe_allow_html=True)
-            if st.button(" ", key="cerrar_click"):
+            if st.button("✕", key="cerrar_chat"):
                 st.session_state.chat_abierto = False
                 st.rerun()
         
@@ -340,12 +269,11 @@ def init_asistente_gato():
                 st.session_state.mensajes_chat.append({"tipo": "bot", "texto": "📊 Precisión superior al 95% en Instagram y Facebook, 93-95% en TikTok."})
                 st.rerun()
         
-        # Input de texto
+        # Input
         pregunta = st.text_input("Escribe tu pregunta:", key="input_pregunta")
         if st.button("Enviar", key="enviar") and pregunta:
             st.session_state.mensajes_chat.append({"tipo": "usuario", "texto": pregunta})
             
-            # Respuestas automáticas
             if "que es" in pregunta.lower() or "qué es" in pregunta.lower():
                 respuesta = "🐱 Este es un detector de cuentas falsas que usa Machine Learning para analizar perfiles de Instagram, TikTok y Facebook."
             elif "como funciona" in pregunta.lower() or "cómo funciona" in pregunta.lower():
