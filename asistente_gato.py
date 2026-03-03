@@ -1,69 +1,73 @@
-# asistente_gato.py - Asistente IA con botón de gato flotante (VERSIÓN FUNCIONAL)
+# asistente_gato.py - Gato dibujado a mano flotante con chat
 import streamlit as st
 import random
 from datetime import datetime
 
 def init_asistente_gato():
-    """Inicializa el asistente - VERSIÓN QUE SÍ FUNCIONA"""
+    """Inicializa el asistente con gato flotante dibujado a mano"""
     
-    # Inicializar estados en session_state
-    if 'mostrar_chat' not in st.session_state:
-        st.session_state.mostrar_chat = False
+    # Inicializar estados
+    if 'mostrar_chat_gato' not in st.session_state:
+        st.session_state.mostrar_chat_gato = False
     
-    if 'mensajes_chat' not in st.session_state:
-        st.session_state.mensajes_chat = [
+    if 'mensajes_gato' not in st.session_state:
+        st.session_state.mensajes_gato = [
             {"tipo": "bot", "texto": "🐱 ¡Hola! Soy tu asistente gatuno. ¿Quieres saber qué hace esta página o cómo funciona el detector?"}
         ]
     
-    # CSS para el botón y la nube
+    # CSS para el gato flotante
     st.markdown("""
     <style>
-        /* Botón flotante de gato */
-        .cat-button {
+        /* Gato flotante dibujado a mano */
+        .gato-flotante {
             position: fixed;
             bottom: 30px;
             right: 30px;
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            width: 100px;
+            height: 100px;
             cursor: pointer;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-            transition: all 0.3s ease;
-            z-index: 9998;
-            border: 3px solid white;
-            animation: catPulse 2s ease-in-out infinite;
+            z-index: 9999;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3));
+            transition: transform 0.3s ease;
+            animation: float 3s ease-in-out infinite;
         }
         
-        .cat-button:hover {
+        .gato-flotante:hover {
             transform: scale(1.1) rotate(5deg);
-            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
         }
         
-        @keyframes catPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
         }
         
         /* Nube de chat */
-        .chat-container {
+        .nube-chat {
             position: fixed;
-            bottom: 120px;
+            bottom: 140px;
             right: 30px;
             width: 350px;
-            max-height: 500px;
             background: white;
             border-radius: 25px 25px 25px 5px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-            z-index: 9999;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            z-index: 10000;
             overflow: hidden;
-            border: 1px solid rgba(102, 126, 234, 0.3);
+            border: 2px solid #667eea;
+            animation: aparecer 0.3s ease;
         }
         
-        /* Cabecera */
+        @keyframes aparecer {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
         .chat-header {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
@@ -73,15 +77,15 @@ def init_asistente_gato():
         }
         
         .chat-header span {
-            font-weight: 600;
+            font-weight: bold;
+            font-size: 1.1rem;
         }
         
         .ia-badge {
             background: rgba(255,255,255,0.2);
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 0.7rem;
-            font-weight: bold;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
             margin-left: 10px;
         }
         
@@ -93,11 +97,11 @@ def init_asistente_gato():
             height: 30px;
             border-radius: 50%;
             cursor: pointer;
+            margin-left: auto;
             font-size: 1.2rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-left: auto;
             transition: all 0.2s ease;
         }
         
@@ -106,7 +110,6 @@ def init_asistente_gato():
             transform: scale(1.1);
         }
         
-        /* Mensajes */
         .chat-messages {
             padding: 20px;
             max-height: 350px;
@@ -132,7 +135,7 @@ def init_asistente_gato():
             background: white;
             color: #333;
             margin-right: auto;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         
         .timestamp {
@@ -141,7 +144,6 @@ def init_asistente_gato():
             margin-top: 4px;
         }
         
-        /* Input */
         .chat-input-area {
             padding: 15px;
             background: white;
@@ -176,7 +178,6 @@ def init_asistente_gato():
             justify-content: center;
         }
         
-        /* Sugerencias */
         .suggestions {
             display: flex;
             flex-wrap: wrap;
@@ -188,12 +189,12 @@ def init_asistente_gato():
         
         .suggestion-chip {
             background: white;
-            border: 1px solid #e0e0e0;
+            border: 1px solid #667eea;
             border-radius: 20px;
             padding: 5px 12px;
             font-size: 0.8rem;
             cursor: pointer;
-            display: inline-block;
+            color: #667eea;
             transition: all 0.2s ease;
         }
         
@@ -204,51 +205,84 @@ def init_asistente_gato():
     </style>
     """, unsafe_allow_html=True)
     
-    # SVG del gato
-    gato_svg = """
-    <svg width="60" height="60" viewBox="0 0 60 60">
-        <circle cx="30" cy="30" r="22" fill="white" stroke="#764ba2" stroke-width="2"/>
-        <polygon points="18,15 22,10 26,15" fill="white" stroke="#764ba2" stroke-width="1.5"/>
-        <polygon points="34,15 38,10 42,15" fill="white" stroke="#764ba2" stroke-width="1.5"/>
-        <circle cx="22" cy="26" r="3" fill="#764ba2"/>
-        <circle cx="38" cy="26" r="3" fill="#764ba2"/>
-        <circle cx="22" cy="26" r="1.5" fill="white"/>
-        <circle cx="38" cy="26" r="1.5" fill="white"/>
-        <polygon points="30,32 28,30 32,30" fill="#ff69b4"/>
-        <line x1="15" y1="32" x2="8" y2="30" stroke="#764ba2" stroke-width="1" opacity="0.5"/>
-        <line x1="15" y1="35" x2="8" y2="35" stroke="#764ba2" stroke-width="1" opacity="0.5"/>
-        <line x1="45" y1="32" x2="52" y2="30" stroke="#764ba2" stroke-width="1" opacity="0.5"/>
-        <line x1="45" y1="35" x2="52" y2="35" stroke="#764ba2" stroke-width="1" opacity="0.5"/>
+    # Gato dibujado a mano en SVG
+    gato_dibujado = """
+    <svg class="gato-flotante" viewBox="0 0 100 100" onclick="toggleChatGato()">
+        <!-- Cabeza del gato (dibujada a mano) -->
+        <circle cx="50" cy="50" r="30" fill="none" stroke="#764ba2" stroke-width="3" stroke-dasharray="5,3" />
+        
+        <!-- Orejas (dibujadas a mano) -->
+        <path d="M30,25 L20,10 L35,20" fill="none" stroke="#764ba2" stroke-width="3" stroke-dasharray="4,2" />
+        <path d="M70,25 L80,10 L65,20" fill="none" stroke="#764ba2" stroke-width="3" stroke-dasharray="4,2" />
+        
+        <!-- Ojos (expresivos) -->
+        <circle cx="40" cy="45" r="5" fill="#764ba2" />
+        <circle cx="60" cy="45" r="5" fill="#764ba2" />
+        <circle cx="42" cy="43" r="2" fill="white" />
+        <circle cx="62" cy="43" r="2" fill="white" />
+        
+        <!-- Pupilas (dibujadas a mano) -->
+        <line x1="40" y1="48" x2="44" y2="48" stroke="white" stroke-width="1" />
+        <line x1="60" y1="48" x2="64" y2="48" stroke="white" stroke-width="1" />
+        
+        <!-- Nariz (triangulito) -->
+        <polygon points="50,55 48,52 52,52" fill="#ff69b4" />
+        
+        <!-- Bigotes (dibujados a mano) -->
+        <line x1="30" y1="55" x2="15" y2="50" stroke="#764ba2" stroke-width="1.5" stroke-dasharray="3,2" />
+        <line x1="30" y1="58" x2="15" y2="58" stroke="#764ba2" stroke-width="1.5" stroke-dasharray="3,2" />
+        <line x1="70" y1="55" x2="85" y2="50" stroke="#764ba2" stroke-width="1.5" stroke-dasharray="3,2" />
+        <line x1="70" y1="58" x2="85" y2="58" stroke="#764ba2" stroke-width="1.5" stroke-dasharray="3,2" />
+        
+        <!-- Sonrisa (dibujada a mano) -->
+        <path d="M40,65 Q50,72 60,65" fill="none" stroke="#764ba2" stroke-width="2" stroke-dasharray="4,2" />
+        
+        <!-- Patitas (dibujadas a mano) -->
+        <ellipse cx="35" cy="80" rx="8" ry="5" fill="none" stroke="#764ba2" stroke-width="2" stroke-dasharray="3,2" />
+        <ellipse cx="65" cy="80" rx="8" ry="5" fill="none" stroke="#764ba2" stroke-width="2" stroke-dasharray="3,2" />
+        
+        <!-- Cola (dibujada a mano) -->
+        <path d="M85,50 Q95,40 90,30" fill="none" stroke="#764ba2" stroke-width="3" stroke-dasharray="5,3" />
     </svg>
     """
     
-    # Botón de gato (usando botón de Streamlit con HTML)
-    col1, col2, col3 = st.columns([10, 1, 1])
-    with col2:
-        if st.button("🐱", key="gato_btn", help="Abrir asistente"):
-            st.session_state.mostrar_chat = not st.session_state.mostrar_chat
-            st.rerun()
+    # JavaScript para manejar el clic
+    st.markdown("""
+    <script>
+    function toggleChatGato() {
+        // Enviar evento a Streamlit
+        const event = new CustomEvent('streamlit:chat_toggle');
+        window.dispatchEvent(event);
+    }
+    </script>
+    """, unsafe_allow_html=True)
     
-    # Nube de chat (solo si mostrar_chat es True)
-    if st.session_state.mostrar_chat:
+    # Mostrar el gato
+    st.markdown(gato_dibujado, unsafe_allow_html=True)
+    
+    # Botón invisible de Streamlit para capturar el clic
+    if st.button(" ", key="gato_clic", help="Haz clic en el gato"):
+        st.session_state.mostrar_chat_gato = not st.session_state.mostrar_chat_gato
+        st.rerun()
+    
+    # Nube de chat (si está activa)
+    if st.session_state.mostrar_chat_gato:
         with st.container():
-            st.markdown("""
-            <div style="position: fixed; bottom: 120px; right: 30px; width: 350px; z-index: 9999;">
-            """, unsafe_allow_html=True)
+            st.markdown('<div class="nube-chat">', unsafe_allow_html=True)
             
             # Cabecera
-            col_c1, col_c2, col_c3 = st.columns([6, 1, 1])
-            with col_c1:
+            col1, col2, col3 = st.columns([6, 2, 1])
+            with col1:
                 st.markdown("🐱 **Asistente Gatuno**")
-            with col_c2:
+            with col2:
                 st.markdown("`IA`")
-            with col_c3:
-                if st.button("✕", key="close_chat"):
-                    st.session_state.mostrar_chat = False
+            with col3:
+                if st.button("✕", key="cerrar_chat"):
+                    st.session_state.mostrar_chat_gato = False
                     st.rerun()
             
             # Mensajes
-            for msg in st.session_state.mensajes_chat:
+            for msg in st.session_state.mensajes_gato:
                 if msg["tipo"] == "bot":
                     st.info(msg["texto"])
                 else:
@@ -257,30 +291,30 @@ def init_asistente_gato():
             # Sugerencias
             col_s1, col_s2, col_s3, col_s4 = st.columns(4)
             with col_s1:
-                if st.button("📌 ¿Qué es?", key="q1"):
-                    st.session_state.mensajes_chat.append({"tipo": "usuario", "texto": "¿Qué es esta página?"})
-                    st.session_state.mensajes_chat.append({"tipo": "bot", "texto": "🐱 Este es un detector de cuentas falsas que usa Machine Learning para analizar perfiles de Instagram, TikTok y Facebook con más del 95% de precisión."})
+                if st.button("📌 ¿Qué es?", key="gato_q1"):
+                    st.session_state.mensajes_gato.append({"tipo": "usuario", "texto": "¿Qué es esta página?"})
+                    st.session_state.mensajes_gato.append({"tipo": "bot", "texto": "🐱 Este es un detector de cuentas falsas que usa Machine Learning para analizar perfiles de Instagram, TikTok y Facebook con más del 95% de precisión."})
                     st.rerun()
             with col_s2:
-                if st.button("⚙️ ¿Cómo funciona?", key="q2"):
-                    st.session_state.mensajes_chat.append({"tipo": "usuario", "texto": "¿Cómo funciona?"})
-                    st.session_state.mensajes_chat.append({"tipo": "bot", "texto": "🤖 El detector analiza 19 características como ratio seguidores/seguidos, engagement, antigüedad de la cuenta, patrones en el nombre, etc."})
+                if st.button("⚙️ ¿Cómo funciona?", key="gato_q2"):
+                    st.session_state.mensajes_gato.append({"tipo": "usuario", "texto": "¿Cómo funciona?"})
+                    st.session_state.mensajes_gato.append({"tipo": "bot", "texto": "🤖 El detector analiza 19 características como ratio seguidores/seguidos, engagement, antigüedad de la cuenta, patrones en el nombre, etc."})
                     st.rerun()
             with col_s3:
-                if st.button("📱 Plataformas", key="q3"):
-                    st.session_state.mensajes_chat.append({"tipo": "usuario", "texto": "¿Qué plataformas soporta?"})
-                    st.session_state.mensajes_chat.append({"tipo": "bot", "texto": "📷 Soporta Instagram, 🎵 TikTok y 👥 Facebook con métricas específicas para cada plataforma."})
+                if st.button("📱 Plataformas", key="gato_q3"):
+                    st.session_state.mensajes_gato.append({"tipo": "usuario", "texto": "¿Qué plataformas soporta?"})
+                    st.session_state.mensajes_gato.append({"tipo": "bot", "texto": "📷 Soporta Instagram, 🎵 TikTok y 👥 Facebook con métricas específicas."})
                     st.rerun()
             with col_s4:
-                if st.button("📊 Precisión", key="q4"):
-                    st.session_state.mensajes_chat.append({"tipo": "usuario", "texto": "¿Qué precisión tiene?"})
-                    st.session_state.mensajes_chat.append({"tipo": "bot", "texto": "📊 La precisión es superior al 95% en Instagram y Facebook, y 93-95% en TikTok."})
+                if st.button("📊 Precisión", key="gato_q4"):
+                    st.session_state.mensajes_gato.append({"tipo": "usuario", "texto": "¿Qué precisión tiene?"})
+                    st.session_state.mensajes_gato.append({"tipo": "bot", "texto": "📊 Precisión superior al 95% en Instagram y Facebook, 93-95% en TikTok."})
                     st.rerun()
             
             # Input de texto
-            pregunta = st.text_input("Escribe tu pregunta:", key="pregunta_input")
-            if st.button("Enviar", key="enviar_btn") and pregunta:
-                st.session_state.mensajes_chat.append({"tipo": "usuario", "texto": pregunta})
+            pregunta = st.text_input("Escribe tu pregunta:", key="gato_input")
+            if st.button("Enviar", key="gato_enviar") and pregunta:
+                st.session_state.mensajes_gato.append({"tipo": "usuario", "texto": pregunta})
                 
                 # Respuesta automática
                 if "que es" in pregunta.lower() or "qué es" in pregunta.lower():
@@ -294,7 +328,7 @@ def init_asistente_gato():
                 else:
                     respuesta = "🐱 ¡Gracias por tu pregunta! Puedes consultarme sobre qué es el detector, cómo funciona, qué plataformas soporta o su precisión."
                 
-                st.session_state.mensajes_chat.append({"tipo": "bot", "texto": respuesta})
+                st.session_state.mensajes_gato.append({"tipo": "bot", "texto": respuesta})
                 st.rerun()
             
-            st.markdown("</div>", unsafe_allow_html=True)
+            st.markdown('</div>', unsafe_allow_html=True)
