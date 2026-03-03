@@ -1,9 +1,9 @@
-# asistente_gato.py - Gato flotante con chat desplegable
+# asistente_gato.py - Gato dibujado a mano flotante con chat
 import streamlit as st
 from datetime import datetime
 
 def init_asistente_gato():
-    """Inicializa el asistente con gato flotante y chat desplegable"""
+    """Inicializa el asistente con gato dibujado a mano flotante"""
     
     # Inicializar estados
     if 'chat_abierto' not in st.session_state:
@@ -14,24 +14,26 @@ def init_asistente_gato():
             {"tipo": "bot", "texto": "🐱 ¡Hola! Soy tu asistente gatuno. ¿Quieres saber qué hace esta página o cómo funciona el detector?"}
         ]
     
-    # CSS para el gato flotante y el chat
+    # CSS para el gato flotante
     st.markdown("""
     <style>
-        /* Gato flotante */
-        .gato-flotante {
+        /* Contenedor del gato */
+        .gato-container {
             position: fixed;
             bottom: 30px;
             right: 30px;
-            width: 100px;
-            height: 100px;
+            width: 120px;
+            height: 120px;
             cursor: pointer;
-            z-index: 9998;
+            z-index: 9999;
             filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3));
             animation: flotar 3s ease-in-out infinite;
             transition: transform 0.3s ease;
+            background: transparent;
+            border: none;
         }
         
-        .gato-flotante:hover {
+        .gato-container:hover {
             transform: scale(1.1) rotate(3deg);
         }
         
@@ -41,22 +43,22 @@ def init_asistente_gato():
             100% { transform: translateY(0px); }
         }
         
-        /* Contenedor del chat */
-        .chat-contenedor {
+        /* Nube de chat */
+        .chat-nube {
             position: fixed;
-            bottom: 140px;
+            bottom: 160px;
             right: 30px;
-            width: 350px;
+            width: 380px;
             background: white;
             border-radius: 25px 25px 25px 5px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-            z-index: 9999;
+            z-index: 10000;
             overflow: hidden;
             border: 2px solid #667eea;
-            animation: deslizar 0.3s ease;
+            animation: aparecer 0.3s ease;
         }
         
-        @keyframes deslizar {
+        @keyframes aparecer {
             from {
                 opacity: 0;
                 transform: translateY(20px);
@@ -115,6 +117,7 @@ def init_asistente_gato():
             border-radius: 15px;
             margin: 8px 0;
             max-width: 85%;
+            word-wrap: break-word;
         }
         
         .user-message {
@@ -187,6 +190,7 @@ def init_asistente_gato():
             font-size: 0.8rem;
             cursor: pointer;
             color: #667eea;
+            transition: all 0.2s ease;
         }
         
         .suggestion-chip:hover {
@@ -196,63 +200,71 @@ def init_asistente_gato():
     </style>
     """, unsafe_allow_html=True)
     
-    # SVG del gato CORREGIDO
+    # GATO DIBUJADO A MANO - VERSIÓN CORREGIDA
     gato_svg = """
-    <svg class="gato-flotante" viewBox="0 0 100 100">
-        <!-- Cabeza -->
-        <circle cx="50" cy="50" r="30" fill="none" stroke="#764ba2" stroke-width="3" stroke-dasharray="5,3" />
-        
-        <!-- Orejas -->
-        <path d="M30,25 L20,10 L35,20" fill="none" stroke="#764ba2" stroke-width="3" stroke-dasharray="4,2" />
-        <path d="M70,25 L80,10 L65,20" fill="none" stroke="#764ba2" stroke-width="3" stroke-dasharray="4,2" />
-        
-        <!-- Ojos -->
-        <circle cx="40" cy="45" r="5" fill="#764ba2" />
-        <circle cx="60" cy="45" r="5" fill="#764ba2" />
-        <circle cx="42" cy="43" r="2" fill="white" />
-        <circle cx="62" cy="43" r="2" fill="white" />
-        
-        <!-- Pupilas -->
-        <line x1="40" y1="48" x2="44" y2="48" stroke="white" stroke-width="1" />
-        <line x1="60" y1="48" x2="64" y2="48" stroke="white" stroke-width="1" />
-        
-        <!-- Nariz -->
-        <polygon points="50,55 48,52 52,52" fill="#ff69b4" />
-        
-        <!-- Bigotes -->
-        <line x1="30" y1="55" x2="15" y2="50" stroke="#764ba2" stroke-width="1.5" stroke-dasharray="3,2" />
-        <line x1="30" y1="58" x2="15" y2="58" stroke="#764ba2" stroke-width="1.5" stroke-dasharray="3,2" />
-        <line x1="70" y1="55" x2="85" y2="50" stroke="#764ba2" stroke-width="1.5" stroke-dasharray="3,2" />
-        <line x1="70" y1="58" x2="85" y2="58" stroke="#764ba2" stroke-width="1.5" stroke-dasharray="3,2" />
-        
-        <!-- Sonrisa -->
-        <path d="M40,65 Q50,72 60,65" fill="none" stroke="#764ba2" stroke-width="2" stroke-dasharray="4,2" />
-        
-        <!-- Patitas -->
-        <ellipse cx="35" cy="80" rx="8" ry="5" fill="none" stroke="#764ba2" stroke-width="2" stroke-dasharray="3,2" />
-        <ellipse cx="65" cy="80" rx="8" ry="5" fill="none" stroke="#764ba2" stroke-width="2" stroke-dasharray="3,2" />
-        
-        <!-- Cola -->
-        <path d="M85,50 Q95,40 90,30" fill="none" stroke="#764ba2" stroke-width="3" stroke-dasharray="5,3" />
-    </svg>
+    <div class="gato-container" onclick="toggleChat()">
+        <svg width="120" height="120" viewBox="0 0 100 100">
+            <!-- Cabeza del gato (dibujada a mano) -->
+            <circle cx="50" cy="50" r="30" fill="none" stroke="#764ba2" stroke-width="3" stroke-dasharray="5,3" />
+            
+            <!-- Orejas (dibujadas a mano) -->
+            <path d="M30,25 L20,10 L35,20" fill="none" stroke="#764ba2" stroke-width="3" stroke-dasharray="4,2" />
+            <path d="M70,25 L80,10 L65,20" fill="none" stroke="#764ba2" stroke-width="3" stroke-dasharray="4,2" />
+            
+            <!-- Ojos (CORREGIDO: cx positivo) -->
+            <circle cx="40" cy="45" r="5" fill="#764ba2" />
+            <circle cx="60" cy="45" r="5" fill="#764ba2" />
+            <circle cx="42" cy="43" r="2" fill="white" />
+            <circle cx="62" cy="43" r="2" fill="white" />
+            
+            <!-- Pupilas -->
+            <line x1="40" y1="48" x2="44" y2="48" stroke="white" stroke-width="1" />
+            <line x1="60" y1="48" x2="64" y2="48" stroke="white" stroke-width="1" />
+            
+            <!-- Nariz -->
+            <polygon points="50,55 48,52 52,52" fill="#ff69b4" />
+            
+            <!-- Bigotes (CORREGIDO: líneas continuas) -->
+            <line x1="30" y1="55" x2="15" y2="50" stroke="#764ba2" stroke-width="1.5" stroke-dasharray="3,2" />
+            <line x1="30" y1="58" x2="15" y2="58" stroke="#764ba2" stroke-width="1.5" stroke-dasharray="3,2" />
+            <line x1="70" y1="55" x2="85" y2="50" stroke="#764ba2" stroke-width="1.5" stroke-dasharray="3,2" />
+            <line x1="70" y1="58" x2="85" y2="58" stroke="#764ba2" stroke-width="1.5" stroke-dasharray="3,2" />
+            
+            <!-- Sonrisa -->
+            <path d="M40,65 Q50,72 60,65" fill="none" stroke="#764ba2" stroke-width="2" stroke-dasharray="4,2" />
+            
+            <!-- Patitas -->
+            <ellipse cx="35" cy="80" rx="8" ry="5" fill="none" stroke="#764ba2" stroke-width="2" stroke-dasharray="3,2" />
+            <ellipse cx="65" cy="80" rx="8" ry="5" fill="none" stroke="#764ba2" stroke-width="2" stroke-dasharray="3,2" />
+            
+            <!-- Cola -->
+            <path d="M85,50 Q95,40 90,30" fill="none" stroke="#764ba2" stroke-width="3" stroke-dasharray="5,3" />
+        </svg>
+    </div>
+    
+    <script>
+    function toggleChat() {
+        const event = new CustomEvent('chat_toggle');
+        window.dispatchEvent(event);
+    }
+    </script>
     """
     
-    # Botón invisible para capturar clics (usando columnas)
+    # Mostrar el gato
+    st.markdown(gato_svg, unsafe_allow_html=True)
+    
+    # Capturar el evento del gato (usando un botón invisible)
     col1, col2, col3 = st.columns([10, 1, 1])
     with col2:
-        # Botón invisible que cubre el área del gato
-        if st.button(" ", key="gato_btn", help="Haz clic en el gato"):
+        if st.button(" ", key="gato_click", help="Haz clic en el gato"):
             st.session_state.chat_abierto = not st.session_state.chat_abierto
             st.rerun()
     
-    # Mostrar el gato (encima del botón)
-    st.markdown(gato_svg, unsafe_allow_html=True)
-    
     # Mostrar chat si está abierto
     if st.session_state.chat_abierto:
-        st.markdown('<div class="chat-contenedor">', unsafe_allow_html=True)
+        st.markdown('<div class="chat-nube">', unsafe_allow_html=True)
         
-        # Header del chat
+        # Cabecera del chat
         col_h1, col_h2, col_h3 = st.columns([6, 2, 1])
         with col_h1:
             st.markdown("🐱 **Asistente Gatuno**")
@@ -285,12 +297,12 @@ def init_asistente_gato():
         with col_s3:
             if st.button("📱 Plataformas", key="q3"):
                 st.session_state.mensajes_chat.append({"tipo": "usuario", "texto": "¿Qué plataformas soporta?"})
-                st.session_state.mensajes_chat.append({"tipo": "bot", "texto": "📷 Soporta Instagram, 🎵 TikTok y 👥 Facebook con métricas específicas para cada una."})
+                st.session_state.mensajes_chat.append({"tipo": "bot", "texto": "📷 Soporta Instagram, 🎵 TikTok y 👥 Facebook con métricas específicas."})
                 st.rerun()
         with col_s4:
             if st.button("📊 Precisión", key="q4"):
                 st.session_state.mensajes_chat.append({"tipo": "usuario", "texto": "¿Qué precisión tiene?"})
-                st.session_state.mensajes_chat.append({"tipo": "bot", "texto": "📊 La precisión es superior al 95% en Instagram y Facebook, y 93-95% en TikTok."})
+                st.session_state.mensajes_chat.append({"tipo": "bot", "texto": "📊 Precisión superior al 95% en Instagram y Facebook, 93-95% en TikTok."})
                 st.rerun()
         
         # Input de texto
